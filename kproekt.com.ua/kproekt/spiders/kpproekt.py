@@ -2,10 +2,11 @@ import scrapy
 from kproekt.items import Product
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.response import open_in_browser as view
-
+from kproekt.spiders.Kproekt_parser import KproektParser
 
 class KpproektSpider(scrapy.Spider):
     name = 'kpproekt'
+    parser = KproektParser
     custom_settings = {'ROBOTSTXT_OBEY': False,
                        "ITEM_PIPELINES": {
         'kproekt.pipelines.KproektPipeline': 300,
@@ -22,6 +23,8 @@ class KpproektSpider(scrapy.Spider):
                 url='https://kproekt.com.ua' + product_link,
                 callback=self.parse_product
             )
+
+        last_page = self.parser.parse_last_page(response)
 
     def parse_product(self, response):
         name = response.xpath('//h1[@class="product-detail-title"]/text()').get()
